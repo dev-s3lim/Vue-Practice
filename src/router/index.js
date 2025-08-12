@@ -1,11 +1,15 @@
 import { createRouter, createWebHistory } from "vue-router";
 import { practiceRouter } from "./practiceRouter";
 import { memberRouter } from "./memberRouter";
+import { orderingRouter } from "./orderingRouter";
+import { productRouter } from "./productRouter";
 
 // routes = url경로와 화면을 Mapping하는 역할을 하는 파일
 const routes = [
     ...practiceRouter, // Spread operator를 사용하여 practiceRouter의 내용을 포함
-    ...memberRouter
+    ...memberRouter,
+    ...orderingRouter,
+    ...productRouter,
 ]
 const router = createRouter(
     {
