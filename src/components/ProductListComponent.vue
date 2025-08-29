@@ -101,6 +101,20 @@ export default {
         window.addEventListener('scroll', this.scrollPaging);
     },
     methods: {
+        addToCart() {
+            const orderProductList = this.productList
+                .filter(p => p.selected && p.productCount > 0)
+                .map(p => ({
+                    productId: p.id,
+                    productName: p.name, // cart에 담으려고 이름 정보도 포함
+                    productCount: p.productCount
+                }));
+
+            console.log(orderProductList);
+            orderProductList.forEach(p => {
+                this.$store.dispatch("addToCart", p);
+            });
+        },
         searchProduct(){
             this.productList=[];
             this.currentPage = 0;

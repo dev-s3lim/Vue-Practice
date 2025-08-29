@@ -5,6 +5,7 @@ import vuetify from './plugins/vuetify';
 import '@mdi/font/css/materialdesignicons.css';
 import 'vuetify/styles';
 import axios from 'axios';
+import store from './store'; // Import the store
 const app = createApp(App);
 
 axios.interceptors.request.use(
@@ -47,4 +48,5 @@ axios.interceptors.response.use(
 
 app.use(vuetify);
 app.use(router);
+app.use(store); // Use the store
 app.mount('#app');

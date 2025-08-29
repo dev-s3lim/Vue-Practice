@@ -6,14 +6,15 @@
           <div v-if="userRole === 'ADMIN'">
             <v-btn :to="'/member/list'">회원관리</v-btn>
             <v-btn :to="'/product/manage'">상품관리</v-btn>
-            <v-btn :to="'/ordering/list'">실시간 주문건수</v-btn>
+            <v-btn :href="'/ordering/list'">실시간 주문건수 {{ liveOrderCount }}</v-btn>
+            <!--<v-btn :to="'/practice/store'">Store Test</v-btn>-->
           </div>
         </v-col>
         <v-col class="text-center">
-          <v-btn :to="'/'">JAVA SHOP</v-btn>
+          <v-btn :to="'/'">DEVOPS SHOP</v-btn>
         </v-col>
         <v-col class="d-flex justify-end">
-            <v-btn>장바구니</v-btn>
+            <v-btn :to="'/ordering/cart'">장바구니 {{ totalQuantity }}</v-btn>
             <v-btn :to="'/product/list'">상품목록</v-btn>
             <v-btn v-if ="isLoggedin" :to="'/member/myInfo'">마이페이지</v-btn>
             <v-btn v-if ="!isLoggedin" :to="'/member/create'">회원가입</v-btn>
@@ -26,6 +27,7 @@
 </template>
 
 <script>
+import { EventSourcePolyfill } from 'event-source-polyfill';
 import { jwtDecode } from 'jwt-decode';
 
 export default {
@@ -33,6 +35,7 @@ export default {
     return {
       userRole: null,
       isLoggedin: false,
+      liveOrderCount: 0,
     };
   },
   created() { // 로그인 후, 헤더의 상태를 업데이트
@@ -43,6 +46,29 @@ export default {
       console.log(payload);
       this.userRole = payload.role;
       this.isLoggedin = true;
+    }
+        // sse 연결 및 메시지 수신
+        if(this.userRole === 'ADMIN') {
+            // sse연결 요청을 위한 event-source-polyfill라이브러리 사용
+            let sse = new EventSourcePolyfill(`${process.env.VUE_APP_API_BASE_URL}/sse/connect`, {
+                headers: {
+                    Authorization: `Bearer ${accessToken}`
+                }
+                });
+            
+                sse.addEventListener('connect', (event) => {
+                    console.log(event);
+                });
+
+                sse.addEventListener('ordered', (event) => {
+                    console.log(event);
+                    this.liveOrderCount++;
+                });
+        }
+    },
+  computed: {
+    totalQuantity() {
+      return this.$store.getters.getTotalQuantity;
     }
   },
   name: 'AppHeader',
